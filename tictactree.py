@@ -332,9 +332,8 @@ class TicTacToe:
     def setupGame(self,dimension):
         pygame.init()
         #self.dimension = dimension
-        #dim = input("Enter dimension of board:")
-        #self.dimension = int(dim)
-        self.dimension =  4
+        dim = input("Enter dimension of board:")
+        self.dimension = int(dim)
         ttt = pygame.display.set_mode ((self.dimension*100, self.dimension*100 + 25))
         self.state = np.full((self.dimension,self.dimension),BLANK)
         self.preFillData()
