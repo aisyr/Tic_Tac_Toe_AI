@@ -13,10 +13,11 @@ class TicTacToe:
         self.gameOver = 0
         self.currentSymbol = "X"
         self.winner=None
-        self.XO = "X"
         self.state = []
         self.dimension = 0
         self.Dict = {}
+        self.currentSymbol = "+"
+        self.nextSymbol = "X"
         
     def state_str(self,state, prefix=""):
         return "\n".join("%s%s" % (prefix, "".join(row)) for row in state)
@@ -100,13 +101,29 @@ class TicTacToe:
     
         # gain access to global variables
         #global XO, winner, gameOver
+
+        if (self.currentSymbol == "X"):
+            self.nextSymbol = "O"
+        elif (self.currentSymbol == "O"):
+            self.nextSymbol = "+"
+        else:
+            self.nextSymbol = "X"
     
         # determine the status message
         if (self.winner is None):
-            message = self.XO + "'s turn"
+            message = self.nextSymbol + "'s turn"
         else:
             message = self.winner + " won!"
             self.gameOver = 1
+
+        flagGameOver = 1
+        for row in range(len(self.state)):
+            for col in range(len(self.state[row])):
+                if (self.state[row][col] == None):
+                    flagGameOver = 0
+
+        if (flagGameOver == 1):
+            message = "Game Over"
             
         # render the status message
         font = pygame.font.Font(None, 24)
@@ -312,9 +329,12 @@ class TicTacToe:
             self.currentSymbol = symbolAI
             value, actions, number = self.mnx(self.state, symbolAI)
             
-            row, col = actions[0]
+            if (len(actions) != 0):
+                row, col = actions[0]
     
-            self.drawMove (board, row, col, symbolAI)
+                self.drawMove (board, row, col, symbolAI)
+        else:
+            print('Game is over!!')
     
     def preFillData(self):
         self.state[0][0] = "O"
@@ -332,8 +352,9 @@ class TicTacToe:
     def setupGame(self,dimension):
         pygame.init()
         #self.dimension = dimension
-        dim = input("Enter dimension of board:")
-        self.dimension = int(dim)
+        # dim = input("Enter dimension of board:")
+        # self.dimension = int(dim)
+        self.dimension = 4
         ttt = pygame.display.set_mode ((self.dimension*100, self.dimension*100 + 25))
         self.state = np.full((self.dimension,self.dimension),BLANK)
         self.preFillData()
@@ -377,10 +398,10 @@ if __name__ == "__main__":
                 # the user clicked; place an X or O
                 counter = counter+1
 
-                if(counter % 3 == 1 and gameTer == False):
+                if(counter % 2 == 1 and gameTer == False):
                     ticTacToeInstance.clickBoard(board, symbol_one)
                     gameTer = ticTacToeInstance.gameWon (board)
-                elif(counter % 3 == 2 and gameTer == False):
+                elif(counter % 2 == 0 and gameTer == False):
                     ticTacToeInstance.clickBoard(board, symbol_two)
                     gameTer = ticTacToeInstance.gameWon (board)
                     if(gameTer == False):
