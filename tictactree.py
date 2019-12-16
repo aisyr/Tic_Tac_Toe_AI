@@ -2,9 +2,11 @@ import numpy as np
 import copy as cp
 import pygame
 from pygame.locals import *
+import matplotlib.pyplot as pt
+from random import randrange
+import time
 
 BLANK = None
-
 
 class TicTacToe:
       
@@ -18,6 +20,7 @@ class TicTacToe:
         self.Dict = {}
         self.currentSymbol = "+"
         self.nextSymbol = "X"
+        self.flagGameOver = 0
         
     def state_str(self,state, prefix=""):
         return "\n".join("%s%s" % (prefix, "".join(row)) for row in state)
@@ -85,10 +88,6 @@ class TicTacToe:
             v.append(v_c)
             a.append(a_c)
             n += n_c
-#             v_c1, a_c1, n_c1 = self.mnx(child, childSymbol1, depth+1)
-#             v.append(v_c1)
-#             a.append(a_c1)
-#             n += n_c1
             
         best = np.argmax(v) if symbol == self.currentSymbol else np.argmin(v)
         return v[best], [list(zip(*valid_moves))[best]] + a[best], n
@@ -108,6 +107,12 @@ class TicTacToe:
             self.nextSymbol = "+"
         else:
             self.nextSymbol = "X"
+
+        self.flagGameOver = 1
+        for row in range(len(self.state)):
+            for col in range(len(self.state[row])):
+                if (self.state[row][col] == None):
+                    self.flagGameOver = 0
     
         # determine the status message
         if (self.winner is None):
@@ -115,14 +120,9 @@ class TicTacToe:
         else:
             message = self.winner + " won!"
             self.gameOver = 1
+            self.flagGameOver = 1
 
-        flagGameOver = 1
-        for row in range(len(self.state)):
-            for col in range(len(self.state[row])):
-                if (self.state[row][col] == None):
-                    flagGameOver = 0
-
-        if (flagGameOver == 1):
+        if (self.flagGameOver == 1):
             message = "Game Over"
             
         # render the status message
@@ -146,19 +146,7 @@ class TicTacToe:
         for i in range(self.dimension):
             pygame.draw.line (background, (250,250,250), ((i+1)*100, 0), ((i+1)*100, self.dimension*100), 2)
             pygame.draw.line (background, (250,250,250), (0,(i+1)*100), (self.dimension*100,(i+1)*100), 2)
-#             
-#         # draw the grid lines
-#         # vertical lines...
-#         pygame.draw.line (background, (250,250,250), (100, 0), (100, 400), 2)
-#         pygame.draw.line (background, (250,250,250), (200, 0), (200, 400), 2)
-#         pygame.draw.line (background, (250,250,250), (300, 0), (300, 400), 2)
-#     
-#         # horizontal lines...
-#         pygame.draw.line (background, (250,250,250), (0, 100), (400, 100), 2)
-#         pygame.draw.line (background, (250,250,250), (0, 200), (400, 200), 2)
-#         pygame.draw.line (background, (250,250,250), (0, 300), (400, 300), 2)
-    
-        # return the board
+
         return background
     
     def boardPos (self,mouseX, mouseY):
@@ -179,27 +167,7 @@ class TicTacToe:
             if(mouseY < (dim + 1)*100):
                 row = dim
                 break
-        
-#         if (mouseY < 100):
-#             row = 0
-#         elif (mouseY < 200):
-#             row = 1
-#         elif (mouseY < 300):
-#             row = 2
-#         else: 
-#             row = 3
-#     
-#         # determine the column the user clicked
-#         if (mouseX < 100):
-#             col = 0
-#         elif (mouseX < 200):
-#             col = 1
-#         elif (mouseX < 300):
-#             col = 2
-#         else:
-#             col = 3
-    
-        # return the tuple containg the row & column
+
         return (row, col)
     
     def drawMove (self,board, boardRow, boardCol, Piece):
@@ -213,8 +181,6 @@ class TicTacToe:
         # determine the center of the square
         centerX = ((boardCol) * 100) + 50
         centerY = ((boardRow) * 100) + 50
-    
-        #if (running == 1):
     
         # draw the appropriate piece
         if (Piece == 'O'):
@@ -253,18 +219,10 @@ class TicTacToe:
             self.currentSymbol = symbol
             self.drawMove (board, row, col, symbol)
     
-            # toggle XO to the other player's move
-            # if (XO == "X"):
-            #     XO = "O"
-            # else:
-            #     XO = "X"
-    
-    
     def gameWon(self,board):
         # determine if anyone has won the game
         # ---------------------------------------------------------------
         # board : the game board surface
-    #    global state, winner
         gameWon = False
         
         # check for winning rows
@@ -335,18 +293,36 @@ class TicTacToe:
                 self.drawMove (board, row, col, symbolAI)
         else:
             print('Game is over!!')
+
+    def randomPlay(self, board, symbolAI):
+        self.currentSymbol = symbolAI
+        if (self.gameOver == 0):
+            valid_moves = np.nonzero(self.state == BLANK)
+            row, col = zip(valid_moves)
+            choice = len(row[0])
+            print("Choices are ", choice)
+            print("Choices ", row, col)
+            if(choice != 0):
+                #print(choice)
+                random_number = randrange(choice)
+                
+                random_row, random_col = row[0][random_number], col[0][random_number]
+                print("random row and col are ", random_row, random_col)
+            
+                self.drawMove (board, random_row, random_col, symbolAI)
+            
+        else:
+            print('Game is over!!')
     
     def preFillData(self):
-        self.state[0][0] = "O"
-        self.state[1][1] = "O"
-        self.state[1][2] = "+"
+        self.state[1][1] = "X"
+        self.state[1][2] = "O"
         self.state[1][3] = "+"
-        self.state[2][0] = "+"
-        self.state[2][1] = "O"
-        self.state[2][2] = "+"
+        self.state[2][1] = "X"
+        self.state[2][2] = "O"
         self.state[2][3] = "+"
-        self.state[3][1] = "O"
-        self.state[3][2] = "+"
+        self.state[3][1] = "X"
+        self.state[3][2] = "O"
         self.state[3][3] = "+"
         
     def setupGame(self,dimension):
@@ -362,116 +338,80 @@ class TicTacToe:
         board = self.initBoard (ttt)
         self.initStates(board, ticTacToeInstance.state)
         return ttt,board
+    
+    def playGame(self):
+        counter = 0
+        gameTer = False
+        while (ticTacToeInstance.running == 1):
+            for event in pygame.event.get():
+                if event.type is QUIT:
+                    ticTacToeInstance.running = 0
+                elif event.type is MOUSEBUTTONDOWN:
+                    counter = counter+1
+
+                    if(counter % 2 == 1 and gameTer == False):
+                        ticTacToeInstance.clickBoard(board, symbol_one)
+                        gameTer = ticTacToeInstance.gameWon (board)
+                    elif(counter % 2 == 0 and gameTer == False):
+                        ticTacToeInstance.clickBoard(board, symbol_two)
+                        gameTer = ticTacToeInstance.gameWon (board)
+                        if(gameTer == False):
+                            ticTacToeInstance.performAIMove(board, symbol_three)
+                            gameTer = ticTacToeInstance.gameWon (board)
+                    
+                ticTacToeInstance.showBoard (ttt, board)
+    
+    def simulate(self, delay):
+        gameTer = False
+
+        pt.subplot(1,4,4)
+        pt.plot(rew,'k-')
+        pt.ylabel("Reward")
+        pt.xlabel("Time")
+        pt.title("Learning curve")
+
+        while ((self.flagGameOver == 0)):
+            print("flaggameover is ", self.flagGameOver)
+            if(gameTer == False):
+                print(symbol_one, " turn")
+                ticTacToeInstance.randomPlay(board, symbol_one)
+                gameTer = ticTacToeInstance.gameWon (board)
+                ticTacToeInstance.showBoard (ttt, board)
+                time.sleep(delay)
+            if(gameTer == False):
+                print(symbol_two, " turn")
+                ticTacToeInstance.randomPlay(board, symbol_two)
+                gameTer = ticTacToeInstance.gameWon (board)
+                ticTacToeInstance.showBoard (ttt, board)
+                time.sleep(delay)
+            if(gameTer == False):
+                print(symbol_three, " turn")
+                ticTacToeInstance.performAIMove(board, symbol_three)
+                gameTer = ticTacToeInstance.gameWon (board)
+                ticTacToeInstance.showBoard (ttt, board)
+                time.sleep(delay)
+                    
+            #ticTacToeInstance.showBoard (ttt, board)
         
 if __name__ == "__main__":
-
-    #global state
-
-    # symbolNow = "X"
-
-    counter = 0
 
     symbol_one = "X"
     symbol_two = "O"
     symbol_three = "+"
 
-    ticTacToeInstance  = TicTacToe();
+    delay = 1
+
+    pt.ion()
+    pt.figure(figsize=(12,4))
+
+    for i in range(10):
+        print(i, "th iteration")
+        ticTacToeInstance  = TicTacToe();
+        ttt,board = ticTacToeInstance.setupGame(4)
+
+        ticTacToeInstance.simulate(delay)
+
+    # ticTacToeInstance  = TicTacToe();
+    # ttt,board = ticTacToeInstance.setupGame(4)
+    # ticTacToeInstance.playGame()
     
-    ttt,board = ticTacToeInstance.setupGame(4)
-#     pygame.init()
-#     
-#     dimensions = 5
-#     
-#     ttt = pygame.display.set_mode ((dimensions*100, dimensions*100 + 25))
-#     pygame.display.set_caption ('Tic Tac Toe')
-# 
-#     
-#     board = ticTacToeInstance.initBoard (ttt)
-# 
-#     ticTacToeInstance.initStates(board, ticTacToeInstance.state)
-    gameTer = False
-    while (ticTacToeInstance.running == 1):
-        for event in pygame.event.get():
-            if event.type is QUIT:
-                ticTacToeInstance.running = 0
-            elif event.type is MOUSEBUTTONDOWN:
-                # the user clicked; place an X or O
-                counter = counter+1
-
-                if(counter % 2 == 1 and gameTer == False):
-                    ticTacToeInstance.clickBoard(board, symbol_one)
-                    gameTer = ticTacToeInstance.gameWon (board)
-                elif(counter % 2 == 0 and gameTer == False):
-                    ticTacToeInstance.clickBoard(board, symbol_two)
-                    gameTer = ticTacToeInstance.gameWon (board)
-                    if(gameTer == False):
-                        ticTacToeInstance.performAIMove(board, symbol_three)
-                        gameTer = ticTacToeInstance.gameWon (board)
-                    
-                # else:
-                
-
-
-                # if (symbolNow == "X"):
-                #     clickBoard(board, symbol_one)
-                # if (symbolNow == "O"):
-                #     clickBoard(board, symbol_two)
-                # if (symbolNow == "+"):
-                #     performAIMove(board, symbol_three)
-
-            # if (symbolNow == "X"):
-            #     symbolNow = "O"
-            # elif (symbolNow == "O"):
-            #     symbolNow = "+"
-            # else:
-            #     symbolNow = "X"
-
-            # check for a winner
-            #gameWon (board)
-
-            # update the display
-            ticTacToeInstance.showBoard (ttt, board)
-
-    
-
-    # state = np.array([
-    #     ["x", "o", "o"],
-    #     ["x", BLANK, BLANK],
-    #     [BLANK, BLANK, BLANK]]).T
-    # symbol = "x"
-
-    # state = np.array([
-    #     ["o", "x", "x"],
-    #     ["o", BLANK, BLANK],
-    #     [BLANK, BLANK, BLANK]])
-    # symbol = "x"
-
-#     state = np.array([
-#         ["x", BLANK, "o"],
-#         ["x", BLANK, BLANK],
-#         [BLANK, BLANK, BLANK]])
-#     symbol = "o"
-
-    # state = np.array([
-    #     ["x", "o", "o"],
-    #     ["x", BLANK, BLANK],
-    #     ["x", BLANK, BLANK]])
-    # symbol = "o"
-
-#     state = np.array([
-#         ["x", "o", "o"],
-#         ["x", "x", "o"],
-#         [BLANK, "x", BLANK]])
-#     symbol = "x"
-
-    # v, actions, n = mnx(state, symbol)
-    # print(state)
-    # print(actions)
-    # print(v, n)
-
-    # v_ab, actions_ab, n_ab = mnx_ab(state, symbol)
-    # print(state)
-    # print(actions_ab)
-    # print(v_ab, n_ab)
-
-
