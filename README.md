@@ -9,3 +9,6 @@
 >   The AI agent in itself will use the min-max tree algorithm to make decisions for a move. The min-max tree algorithm is based on the principle that a player will always try to maximize his score at any given state of system/game while minimizing other player's scores. The underlying principal for this to work is with the assumpution and prespective that we always see from only 1 player's perspective where the player always choses the maximizing score from the options he has from the branches and the other player always selects the lowest score from its brances. The min-max tree is iteratively calculated at each new state since the game is played from a top-down perspective and the AI agent would have to calculate every possible moves each time. This obviously is computationally intensive but nevertheless very effective. 
 
 >   There is a neural network machine learning involved as well. How, you may ask? Well, we have to make the AI agent learn making the right decision every single time. 
+
+
+# Dependency
