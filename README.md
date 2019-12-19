@@ -24,5 +24,5 @@ Please keep ```tic-tac-toe-4.csv``` in the root directory. Its a data set for tr
 
 1. First, Install the python modules which are specified above.
 2. Run ```python tictactree.py```
-3. It will ask for ```Do you want to play with the trained model or do you want to simulate a new model ?```. If you want to play the actual game of 3 player Tic Tac Toe, then enter ```P``` or if you want to simulate a new model for Tic Tac Toe Game for 100 game iterations then enter ```S```.
+3. It will ask for ```Do you want to play with the trained model or do you want to simulate a new model ?```. If you want to play the actual game of 3 player Tic Tac Toe, then enter ```P``` or if you want to simulate a new model for Tic Tac Toe Game for 100 game iterations then enter ```S```. Graph will be shown in simulation mood for the learning curve
 4. Then it will ask for ```Do you want to use the trained model or new model ?```. If you want to use the already trained model then enter ```T``` or to use new model, enter ```N```.
